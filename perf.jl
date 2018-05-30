@@ -1,8 +1,8 @@
 # This file was formerly a part of Julia. License is MIT: https://julialang.org/license
 
-using LinearAlgebra
-using Test
-using Printf
+using Base.LinAlg
+using Base.Test
+#using Printf
 
 
 include("./perfutil.jl")
@@ -20,8 +20,8 @@ function parseintperf(t)
     local n, m
     for i=1:t
         n = rand(UInt32)
-        s = string(n, base = 16)
-        m = UInt32(parse(Int64,s, base = 16))
+        s = hex(n)
+        m = UInt32(parse(Int64,s, 16))
     end
     @test m == n
     return n
@@ -128,8 +128,8 @@ function randmatstat(t)
         d = randn(n,n)
         P = [a b c d]
         Q = [a b; c d]
-        v[i] = tr((P'*P)^4)
-        w[i] = tr((Q'*Q)^4)
+        v[i] = trace((P'*P)^4)
+        w[i] = trace((Q'*Q)^4)
     end
     return (std(v)/mean(v), std(w)/mean(w))
 end
@@ -144,7 +144,7 @@ end
 
 ## printfd ##
 
-if Sys.isunix()
+if Sys.is_unix()
     function printfd(n)
         open("/dev/null", "w") do io
             for i = 1:n
@@ -153,7 +153,7 @@ if Sys.isunix()
         end
     end
 
-    printfd(1)
+    #printfd(1)
     @timeit printfd(100000) "print_to_file" "Printing to a file descriptor"
 end
 

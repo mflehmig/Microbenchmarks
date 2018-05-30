@@ -1,6 +1,7 @@
 # This file was formerly a part of Julia. License is MIT: https://julialang.org/license
 
-using Printf, Random
+#using Printf
+#using Random
 
 const mintrials = 5
 const mintime = 2000.0
@@ -65,7 +66,7 @@ macro output_timings(t,name,desc,group)
         elseif print_output
             @printf "julia,%s,%f,%f,%f,%f\n" $name minimum($t) maximum($t) mean($t) std($t)
         end
-        GC.gc()
+        gc()
     end
 end
 
@@ -106,10 +107,10 @@ end
 
 function maxrss(name)
     # FIXME: call uv_getrusage instead here
-    @static if Sys.islinux()
+    @static if Sys.is_linux()
         rus = Vector{Int64}(uninitialized, div(144,8))
         fill!(rus, 0x0)
-        res = ccall(:getrusage, Int32, (Int32, Ptr{Cvoid}), 0, rus)
+        res = ccall(:getrusage, Int32, (Int32, Ptr{Void}), 0, rus)
         if res == 0
             mx = rus[5]/1024
             @printf "julia,%s.mem,%f,%f,%f,%f\n" name mx mx mx 0
